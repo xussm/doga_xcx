@@ -1,0 +1,23 @@
+<!--index.wxml-->
+
+<view class="container">
+
+      <text class="guide-title">请先选择设备</text>
+      <view class="guide-item1">
+        找不到您的设备信息，您可以扫一扫产品二维码来获取到对应的信息
+        <!-- <view class="weui-cell" bindtap="goSoundBindPage">
+            <view class="weui-cell__hd" style="position: relative;margin-right: 10px;">
+                <image src="../../image/pen_icon.png" style="width: 100rpx;height:100rpx;display: block"></image>   
+            </view>
+            <view class="weui-cell__bd">
+                <view>学立佳点读笔</view>
+                <view style="font-size: 13px;color: #888888;">配置网络</view>
+            </view>
+        </view> -->
+      </view>
+
+       <view class="guide-item">
+        <button  size="{{primarySize}}"  bindtap="scanQrcode" class="default-color"> 扫一扫 </button>
+      </view>
+      
+</view>

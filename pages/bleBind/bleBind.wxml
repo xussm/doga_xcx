@@ -1,0 +1,274 @@
+<!--index.wxml-->
+
+<view class="container">
+  <view class="page-body">
+    <block wx:if="{{!isAuthorized}}">
+    <!-- <button open-type="openSetting" >打开授权设置页</button> -->
+        <button  open-type="getUserInfo" bindgetuserinfo="getUserInfo" style="margin-top:300rpx;">微信授权</button>
+    </block>
+    <block wx:if="{{isAuthorized}}">
+
+      <block wx:if="{{appStatus >= 6 }}">
+        <view class="icon-box"  wx:if="{{appStatus == 6 || appStatus == 7 || appStatus == 8}}">
+            <view class="icon-small-wrp">
+                <view class="weui-loading"  wx:if="{{appStatus == 6 || appStatus == 7 }}">
+                </view>
+            </view>
+            <view class="icon-box-ctn">
+                <view class="icon-box-title" wx:if="{{appStatus == 6}}">
+                    正在搜索附近的故事机
+                </view>
+                <view class="icon-box-title" wx:if="{{appStatus == 7}}">
+                   连接蓝牙故事机{{theLinkedDeviceId}}.
+                </view>
+                <view class="icon-box-title" wx:if="{{appStatus == 8}}">
+                   已连接连接蓝牙故事机{{theLinkedDeviceId}}:
+                </view>
+            </view>
+        </view>
+
+        <block wx:if="{{appStatus == 6}}">
+          <view class="page-section-title" wx:if="{{bleList.length>0}}">
+              选择蓝牙故事机进行连接
+          </view>
+          <view  wx:for="{{bleList}}" wx:for-index="idx" wx:for-item="ble" class="weui-cell weui-cell_wifi_list"  data-realdeviceid="{{ble.realDeviceId}}" data-deviceid="{{ble.deviceId}}" bindtap="connectBLE" wx:if="{{ble.deviceInfo.name!='' }}">
+            <view class="weui-cell"  >
+                <view class="weui-cell__hd" style="position: relative;margin-right: 20rpx;">
+                    <image src="{{ble.deviceInfo.url}}" style="width:100rpx;height:100rpx;display: block"/>
+                </view>
+                <view class="weui-cell__bd">
+                    <view>{{ble.deviceInfo.name}}   <text style="font-size: 26rpx;color: #888888;margin-left:40rpx;">{{ble.distanceTips}}</text></view>
+                    
+                    <view style="font-size: 26rpx;color: #888888;"> {{ble.realDeviceId}}</view>
+                </view>
+            </view>
+          </view>
+        </block>
+
+        <block wx:if="{{appStatus == 7 || appStatus >= 8}}">
+          <view  wx:for="{{bleList}}" wx:for-index="idx" wx:for-item="ble" class="weui-cell weui-cell_wifi_list"  data-realdeviceid="{{ble.realDeviceId}}" data-deviceid="{{ble.deviceId}}" bindtap="connectBLE" wx:if="{{ble.realDeviceId==theLinkedDeviceId}}">
+            <view class="weui-cell">
+                <view class="weui-cell__hd" style="position: relative;margin-right: 20rpx;">
+                    <image src="{{ble.deviceInfo.url}}" style="width:100rpx;height:100rpx;display: block"/>
+                </view>
+                <view class="weui-cell__bd">
+                    <view>{{ble.deviceInfo.name}}
+
+                    </view>
+                    <view style="font-size: 26rpx;color: #888888;"> {{ble.realDeviceId}}
+                      <block  wx:if="{{appStatus == 7}}">蓝牙连接中...</block>
+                      <block wx:if="{{appStatus >= 8}}">蓝牙已连接</block>
+                     
+                    </view>
+                </view>
+            </view>
+          </view>
+        </block>
+
+
+
+      </block>
+
+      <block wx:if="{{isNotSupportVersion}}">
+                <view class="ddm-tips-title">微信版本过低</view>
+                <view class="ddm-tips-words">请先升级微信版本</view>
+      </block>
+
+      <block wx:else>
+
+        <block wx:if="{{appStatus == 0}}">
+              <!-- <view class="ddm-tips">
+                  <view class="ddm-tips-title">登录中</view>
+              </view> -->
+        </block>
+
+        <block wx:if="{{appStatus == 1}}">
+
+          <view>
+              <view class="ddm-tips">
+                  <!-- <view class="ddm-tips-icon">
+                      <icon type="warn" size="50" color='red' />
+                  </view> -->
+                  <view class="ddm-tips-title">登录失败</view>
+                  <view class="ddm-tips-words">您可以尝试重新登录</view>
+
+                  <view class="ddm-tips-action"><button type="primary" size="mini"  bindtap="loginAgain"> 重新登录 </button></view>
+
+              </view>
+          </view>
+        </block>
+
+        <block wx:if="{{appStatus>=3}}">
+
+
+
+          <!--蓝牙连接主界面开始-->
+          <block wx:if="{{blueConn===1 && showBluePage===1}}">
+              <view wx:if="{{appStatus >= 3}}" class="index-hd">
+                  <view wx:if="{{ appStatus == 3 || appStatus == 5 || appStatus == 6}}">
+                      <view class="grayLine"></view>
+                      <view class="set-tips">
+                        <view class="set-tips-title">友情提示：</view>
+                        <view class="set-tips-word">1. 故事机与手机的间隔在2M以内</view>
+                        <view class="set-tips-word">2. 没有其它手机同时对该故事机配置网络</view>
+                        <view class="set-tips-word">3. 可能需要GPS权限[部分手机]</view>
+                      </view>
+                      <!-- <view class="ddm-tips" style="color:#999" wx:if="{{otherWayShow}}">
+                          <navigator url="/pages/soundBind/soundBind?gzhId={{wxRequest.gzhId}}&type=soundBind&productId={{wxRequest.productId}}&token={{token}}" hover-class="navigator-hover">打不开蓝牙？</navigator>
+                        <navigator url="/pages/soundBind/soundBind?gzhId={{wxRequest.gzhId}}&type=soundBind&productId={{wxRequest.productId}}&token={{token}}" hover-class="navigator-hover">尝试声波配网</navigator>
+                      </view> -->
+                  </view>
+                  <view wx:elif="{{appStatus == 4}}">
+                      <view class="ddm-tips">
+                          <view class="ddm-tips-icon">
+                              <icon type="warn" size="50" color='gray' />
+                          </view>
+                          <view class="ddm-tips-title">
+                              请打开手机蓝牙
+                          </view>
+                          <view class="ddm-tips-words">
+                              
+                          </view>
+                          <view class="ddm-tips-action">
+                              <button type="default"  bindtap="bleConnAgain">
+                                  我已打开
+                              </button>
+                          </view>
+                      </view>
+                      <!-- <view class="sound-tips">
+                          <navigator url="/pages/soundBind/soundBind?gzhId={{wxRequest.gzhId}}&type=soundBind&productId={{wxRequest.productId}}&token={{token}}" hover-class="navigator-hover">打不开蓝牙？</navigator>
+                        <navigator url="/pages/soundBind/soundBind?gzhId={{wxRequest.gzhId}}&type=soundBind&productId={{wxRequest.productId}}&token={{token}}" hover-class="navigator-hover">尝试声波配网</navigator>
+                      </view> -->
+                  </view>
+                  <view wx:else>
+                      <view wx:if="{{ssid != null}}" class="index-desc">
+                          {{ssid}}
+                      </view>
+                      <view wx:if="{{wifiStatus == 0}}" class="index-desc">
+                          
+                      </view>
+                      <view wx:elif="{{wifiStatus == 1}}" class="icon-box">
+                          <view class="icon-small-wrp">
+                              <icon class="icon-small" type="success" size="18">
+                              </icon>
+                          </view>
+                          <view class="icon-box-ctn">
+                              <view class="icon-box-title">
+                                  已连接
+                              </view>
+                          </view>
+                      </view>
+                      <view wx:elif="{{wifiStatus == 2}}" class="icon-box">
+                          <view class="icon-small-wrp">
+                              <view class="weui-loading">
+                              </view>
+                          </view>
+                          <view class="icon-box-ctn">
+                              <view class="icon-box-title">
+                                  连接中
+                              </view>
+                          </view>
+                      </view>
+                      <view wx:else class="icon-box">
+                          <view class="icon-box-ctn">
+                              <view class="icon-box-title">
+                              </view>
+                          </view>
+                      </view>
+                  </view>
+              </view>
+              <view wx:if="{{appStatus >= 8}}" class="page-section">
+                  <block wx:if="{{list.length<=0}}">
+                      <view class="icon-box">
+                          <view class="icon-box-ctn">
+                              <view class="icon-box-title">
+                                  正在搜索wifi列表…
+                              </view>
+                          </view>
+                          <view class="icon-small-wrp">
+                              <view class="weui-loading">
+                              </view>
+                          </view>
+                      </view>
+                  
+                  </block>
+                  <view class="page-section-title">
+                      选择故事机要连接的WiFi
+                  </view>
+                  <view class="weui-cells weui-cells_after-title">
+                      <block wx:if="{{list.length>0}}">
+                      
+                          <view wx:key="wifi_list" wx:for="{{list}}" wx:for-index="idx" wx:for-item="wifi"
+                          class="weui-cell weui-cell_wifi_list" bindtap="connectSSID" data-ssid="{{wifi.ssid}}"
+                          data-encrypt="{{wifi.encrypt}}" data-extra="{{bindCode}}">
+                              <view class="weui-cell__bd">
+                                  {{wifi.ssid}}
+                              </view>
+                              <view wx:if="{{ wifi.encrypt > 0}}" class="weui-cell__ft">
+                                  <image class='lock' src='../../image/lock.png'>
+                                  </image>
+                              </view>
+                              <view class="weui-cell__ft">
+                                  <image class='wifi_signal' src='../../image/wifi0{{wifi.rssi}}.png'>
+                                  </image>
+                              </view>
+                          </view>
+                      </block>
+                      <view class="weui-cell weui-cell_wifi_list" bindtap="connectOthers">
+                          <view class="weui-cell__bd">
+                              其它...
+                          </view>
+                      </view>
+                  </view>
+              </view>
+              <!--弹窗-->
+              <view class="modal-mask" catchtouchmove="preventTouchMove" wx:if="{{modal.showModal}}">
+              </view>
+              <view class="modal-dialog" wx:if="{{modal.showModal}}">
+                  <view class="modal-title" wx:if="{{modal.ssid == null}}">
+                      连接到网络
+                  </view>
+                  <view class="modal-title" wx:else>
+                      连接到{{modal.ssid}}
+                  </view>
+                  <view class="modal-content">
+                      <view class="modal-input" wx:if="{{modal.ssid == null}}">
+                          <input name="input_ssid" cursor-spacing="100" confirm-type="next" focus
+                          placeholder-class="input-holder" type="text" maxlength="32" class="input"
+                          placeholder="请输入WiFi名称" bindinput="inputSSIDChange" 
+                          bindconfirm="nextInputFocus">
+                          </input>
+                      </view>
+                      <view class="modal-input"> 
+                          <input name="input_password" cursor-spacing="100" confirm-type="go" focus="{{nextFocus}}" placeholder-class="input-holder" type="text" password="{{!showPasswordTip}}" maxlength="64" class="input" placeholder="请输入WiFi密码" bindinput="inputPasswordChange" bindconfirm="onConfirm" value="{{input.password}}">
+                          </input>
+                          <block wx:if="{{!showPasswordTip}}">
+                            <view bindtap="changeSsidType" class="pwd-btn-tip weui-agree__link eyes_off">
+                            </view>
+                          </block>
+                          <block wx:else>
+                              <view bindtap="changeSsidType" class="pwd-btn-tip weui-agree__link eyes_on">        
+                              </view>          
+                          </block>
+                      </view>
+                  </view>
+                  <view class="modal-footer">
+                      <view class="btn-cancel" bindtap="onCancel" data-status="cancel">
+                          取消
+                      </view>
+                      <view class="btn-confirm" bindtap="onConfirm" data-status="confirm">
+                          确定
+                      </view>
+                  </view>
+              </view>
+              <!--弹窗-->
+          </block>
+        <!--蓝牙连接主界面结束-->
+
+        </block>
+
+      </block>
+
+    </block>
+  </view>
+</view>

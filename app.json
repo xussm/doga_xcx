@@ -1,0 +1,14 @@
+{
+  "pages": [
+    "pages/set/set",
+    "pages/bleBind/bleBind",
+    "pages/guide/guide"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "配置网络",
+    "navigationBarTextStyle": "black"
+  },
+  "sitemapLocation": "sitemap.json"
+}

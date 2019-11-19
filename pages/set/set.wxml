@@ -1,0 +1,6 @@
+<!--index.wxml-->
+
+<view class="container">
+ <!-- <view> {{wxRequest.gzhId}} </view>
+<view>{{wxRequest.type}}  </view>  -->
+</view>
